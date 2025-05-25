@@ -10,11 +10,15 @@ class handler(BaseHTTPRequestHandler):
         names = query.get('name', [])
 
         try:
-            # Use absolute path to locate JSON file in deployed env
+            # Load JSON data
             json_path = os.path.join(os.path.dirname(__file__), '..', 'q-vercel-python.json')
             with open(json_path, 'r') as f:
-                data = json.load(f)
+                raw_data = json.load(f)
 
+            # Convert list to dict: {"Alice": 10, "Bob": 20}
+            data = {entry['name']: entry['marks'] for entry in raw_data}
+
+            # Lookup marks
             marks = [data.get(name, 0) for name in names]
 
             self.send_response(200)
